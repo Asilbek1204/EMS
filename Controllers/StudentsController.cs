@@ -7,12 +7,12 @@ namespace EMS.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-//[Authorize]
+[Authorize]
 public class StudentsController(IStudentService service) : ControllerBase
 {
 
     [HttpPost]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(StudentCreateDto dto)
     {
         var student = await service.CreateAsync(dto);
@@ -20,7 +20,7 @@ public class StudentsController(IStudentService service) : ControllerBase
     }
 
     [HttpPut]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(StudentUpdateDto dto)
     {
         var student = await service.UpdateAsync(dto);
@@ -28,7 +28,7 @@ public class StudentsController(IStudentService service) : ControllerBase
     }
 
     [HttpGet]
-    //[Authorize(Roles = "Admin,Teacher")]
+    [Authorize(Roles = "Admin,Teacher")]
     public async Task<IActionResult> GetAll()
     {
         var students = await service.GetAllAsync();
@@ -36,7 +36,7 @@ public class StudentsController(IStudentService service) : ControllerBase
     }
 
     [HttpGet("{id}")]
-    //[Authorize(Roles = "Admin,Teacher")]
+    [Authorize(Roles = "Admin,Teacher")]
     public async Task<IActionResult> Get(int id)
     {
         var student = await service.GetByIdAsync(id);
@@ -44,7 +44,7 @@ public class StudentsController(IStudentService service) : ControllerBase
     }
 
     [HttpPost("add-to-group")]
-    //[Authorize(Roles = "Admin,Teacher")]
+    [Authorize(Roles = "Admin,Teacher")]
     public async Task<IActionResult> AddToGroup([FromBody] AddStudentToGroupDto dto)
     {
         await service.AddToGroupAsync(dto.StudentId, dto.GroupId);

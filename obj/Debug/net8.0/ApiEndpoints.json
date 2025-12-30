@@ -250,5 +250,15 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "EMS.Api.Controllers.UsersController",
+    "Method": "GetAll",
+    "RelativePath": "api/users",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
   }
 ]

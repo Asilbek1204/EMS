@@ -44,5 +44,18 @@ public class AppDbContext : DbContext
             .WithMany(g => g.StudentGroups)
             .HasForeignKey(sg => sg.GroupId);
 
+        modelBuilder.Entity<UserGroup>()
+        .HasKey(ug => new { ug.UserId, ug.GroupId });
+
+        modelBuilder.Entity<UserGroup>()
+            .HasOne(ug => ug.User)
+            .WithMany(u => u.UserGroups)
+            .HasForeignKey(ug => ug.UserId);
+
+        modelBuilder.Entity<UserGroup>()
+            .HasOne(ug => ug.Group)
+            .WithMany(g => g.UserGroups)
+            .HasForeignKey(ug => ug.GroupId);
+
     }
 }

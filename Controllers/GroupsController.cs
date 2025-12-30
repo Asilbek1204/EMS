@@ -19,11 +19,28 @@ public class GroupsController : ControllerBase
         _db = db;
     }
 
-    // CREATE — Admin
     [HttpPost]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(CreateGroupDto dto)
     {
+        // 1️⃣ User mavjudligini tekshiramiz
+        var user = await _db.Users
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(u => u.Id == dto.MentorId);
+
+        if (user == null)
+            return BadRequest(new { message = "User not found" });
+
+        // 2️⃣ User mentor ekanligini tekshiramiz
+        var isMentor = user.UserRoles.Any(r =>
+            r.Role.Name == "Teacher" ||
+            r.Role.Name == "Manager");
+
+        if (!isMentor)
+            return BadRequest(new { message = "User is not a mentor" });
+
+        // 3️⃣ Group yaratamiz
         var group = new Group
         {
             Name = dto.Name,
@@ -34,16 +51,16 @@ public class GroupsController : ControllerBase
         _db.Groups.Add(group);
         await _db.SaveChangesAsync();
 
-        return Ok();
+        return Ok(new { id = group.Id });
     }
-
-    // UPDATE — Admin
     [HttpPut]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(UpdateGroupDto dto)
     {
         var group = await _db.Groups.FindAsync(dto.Id);
         if (group == null) return NotFound();
+        var mentor = await _db.Users.FindAsync(dto.MentorId);
+        if (mentor == null) return BadRequest(new { message = "Mentor not found" });
 
         group.Name = dto.Name;
         group.Price = dto.Price;
@@ -55,7 +72,7 @@ public class GroupsController : ControllerBase
 
     // GET BY ID — Admin, Teacher
     [HttpGet("{id}")]
-    //[Authorize(Roles = "Admin,Teacher")]
+    [Authorize(Roles = "Admin,Teacher")]
     public async Task<ActionResult<GroupDetailsDto>> Get(int id)
     {
         var group = await _db.Groups
@@ -83,7 +100,7 @@ public class GroupsController : ControllerBase
 
     // GET LIST — Admin, Teacher
     [HttpGet]
-    //[Authorize(Roles = "Admin,Teacher")]
+    [Authorize(Roles = "Admin,Teacher")]
     public async Task<List<GroupListDto>> GetList()
     {
         return await _db.Groups

@@ -11,4 +11,5 @@ public class User
     public string LastName { get; set; } = null!;
 
     public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+    public ICollection<UserGroup> UserGroups { get; set; }
 }

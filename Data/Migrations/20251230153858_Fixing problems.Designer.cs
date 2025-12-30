@@ -3,6 +3,7 @@ using System;
 using EMS.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EMS.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251230153858_Fixing problems")]
+    partial class Fixingproblems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -138,21 +141,6 @@ namespace EMS.Api.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("EMS.Api.Entities.UserGroup", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("GroupId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("UserId", "GroupId");
-
-                    b.HasIndex("GroupId");
-
-                    b.ToTable("UserGroup");
-                });
-
             modelBuilder.Entity("EMS.Api.Entities.UserRole", b =>
                 {
                     b.Property<int>("UserId")
@@ -198,25 +186,6 @@ namespace EMS.Api.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("EMS.Api.Entities.UserGroup", b =>
-                {
-                    b.HasOne("EMS.Api.Entities.Group", "Group")
-                        .WithMany("UserGroups")
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EMS.Api.Entities.User", "User")
-                        .WithMany("UserGroups")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Group");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("EMS.Api.Entities.UserRole", b =>
                 {
                     b.HasOne("EMS.Api.Entities.Role", "Role")
@@ -239,8 +208,6 @@ namespace EMS.Api.Migrations
             modelBuilder.Entity("EMS.Api.Entities.Group", b =>
                 {
                     b.Navigation("StudentGroups");
-
-                    b.Navigation("UserGroups");
                 });
 
             modelBuilder.Entity("EMS.Api.Entities.Role", b =>
@@ -255,8 +222,6 @@ namespace EMS.Api.Migrations
 
             modelBuilder.Entity("EMS.Api.Entities.User", b =>
                 {
-                    b.Navigation("UserGroups");
-
                     b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618

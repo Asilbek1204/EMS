@@ -30,8 +30,9 @@ public class AuthController : ControllerBase
             throw new UnauthorizedException("Username or password incorrect");
 
         if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-            throw new UnauthorizedException("Username or password incorrect");
-
+        {
+            return Unauthorized("Username yoki password noto‘g‘ri");
+        }
         // 🔹 ROLE'LARNI OLAMIZ
         var roles = user.UserRoles
             .Select(ur => ur.Role.Name)

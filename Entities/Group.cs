@@ -9,4 +9,5 @@ public class Group
     public User Mentor { get; set; } = null!;
 
     public ICollection<StudentGroup> StudentGroups { get; set; } = new List<StudentGroup>();
+    public ICollection<UserGroup> UserGroups { get; set; }
 }
