@@ -22,6 +22,7 @@ public static class SeedData
             db.SaveChanges();
 
             // Admin user
+
             if (!db.Users.Any())
             {
                 var admin = new User

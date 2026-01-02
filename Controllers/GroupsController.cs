@@ -10,21 +10,14 @@ namespace EMS.Api.Controllers;
 
 [ApiController]
 [Route("api/groups")]
-public class GroupsController : ControllerBase
+public class GroupsController(AppDbContext db) : ControllerBase
 {
-    private readonly AppDbContext _db;
-
-    public GroupsController(AppDbContext db)
-    {
-        _db = db;
-    }
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(CreateGroupDto dto)
     {
-        // 1️⃣ User mavjudligini tekshiramiz
-        var user = await _db.Users
+        var user = await db.Users
             .Include(u => u.UserRoles)
             .ThenInclude(ur => ur.Role)
             .FirstOrDefaultAsync(u => u.Id == dto.MentorId);
@@ -32,7 +25,6 @@ public class GroupsController : ControllerBase
         if (user == null)
             return BadRequest(new { message = "User not found" });
 
-        // 2️⃣ User mentor ekanligini tekshiramiz
         var isMentor = user.UserRoles.Any(r =>
             r.Role.Name == "Teacher" ||
             r.Role.Name == "Manager");
@@ -40,7 +32,6 @@ public class GroupsController : ControllerBase
         if (!isMentor)
             return BadRequest(new { message = "User is not a mentor" });
 
-        // 3️⃣ Group yaratamiz
         var group = new Group
         {
             Name = dto.Name,
@@ -48,8 +39,8 @@ public class GroupsController : ControllerBase
             MentorId = dto.MentorId
         };
 
-        _db.Groups.Add(group);
-        await _db.SaveChangesAsync();
+        db.Groups.Add(group);
+        await db.SaveChangesAsync();
 
         return Ok(new { id = group.Id });
     }
@@ -57,25 +48,24 @@ public class GroupsController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(UpdateGroupDto dto)
     {
-        var group = await _db.Groups.FindAsync(dto.Id);
+        var group = await db.Groups.FindAsync(dto.Id);
         if (group == null) return NotFound();
-        var mentor = await _db.Users.FindAsync(dto.MentorId);
+        var mentor = await db.Users.FindAsync(dto.MentorId);
         if (mentor == null) return BadRequest(new { message = "Mentor not found" });
 
         group.Name = dto.Name;
         group.Price = dto.Price;
         group.MentorId = dto.MentorId;
 
-        await _db.SaveChangesAsync();
+        await db.SaveChangesAsync();
         return Ok();
     }
 
-    // GET BY ID — Admin, Teacher
     [HttpGet("{id}")]
     [Authorize(Roles = "Admin,Teacher")]
     public async Task<ActionResult<GroupDetailsDto>> Get(int id)
     {
-        var group = await _db.Groups
+        var group = await db.Groups
             .Include(g => g.Mentor)
             .Include(g => g.StudentGroups)
                 .ThenInclude(sg => sg.Student)
@@ -98,12 +88,11 @@ public class GroupsController : ControllerBase
         };
     }
 
-    // GET LIST — Admin, Teacher
     [HttpGet]
     [Authorize(Roles = "Admin,Teacher")]
     public async Task<List<GroupListDto>> GetList()
     {
-        return await _db.Groups
+        return await db.Groups
             .Include(g => g.Mentor)
             .Include(g => g.StudentGroups)
             .Select(g => new GroupListDto

@@ -101,7 +101,7 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-// 🔥 GLOBAL ERROR HANDLER
+//GLOBAL ERROR HANDLER
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthentication();

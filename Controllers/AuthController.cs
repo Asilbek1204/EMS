@@ -23,7 +23,7 @@ public class AuthController(AppDbContext db, JwtTokenGenerator jwt) : Controller
 
         if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
         {
-            return Unauthorized("Username yoki password noto‘g‘ri");
+            return Unauthorized("Incorrect password");
         }
 
         var roles = user.UserRoles
