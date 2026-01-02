@@ -13,15 +13,12 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// =======================
+
 // DATABASE
-// =======================
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// =======================
 // JWT AUTHENTICATION
-// =======================
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opt =>
     {
@@ -38,7 +35,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
             ),
 
-            RoleClaimType = ClaimTypes.Role // 🔥 MUAMMONI HAL QILADIGAN QATOR
+            RoleClaimType = ClaimTypes.Role 
         };
 
         opt.RequireHttpsMetadata = false;
@@ -48,22 +45,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// =======================
 // SERVICES
-// =======================
 builder.Services.AddScoped<JwtTokenGenerator>();
 builder.Services.AddScoped<PasswordHasher>();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<IStudentService, StudentService>();
 
-// =======================
 // CONTROLLERS
-// =======================
 builder.Services.AddControllers();
 
-// =======================
 // SWAGGER + JWT 🔒
-// =======================
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>
 {
@@ -101,14 +92,10 @@ builder.Services.AddSwaggerGen(opt =>
 
 var app = builder.Build();
 
-// =======================
 // SEED DATA
-// =======================
 SeedData.Init(app);
 
-// =======================
 // MIDDLEWARE PIPELINE
-// =======================
 app.UseSwagger();
 app.UseSwaggerUI();
 

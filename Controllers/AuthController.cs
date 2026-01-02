@@ -4,19 +4,11 @@ using EMS.Api.Helpers.Exceptions;
 using EMS.Api.Helpers.JwtHelper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Crypto.Generators;
+
 [ApiController]
 [Route("api/auth")]
-public class AuthController : ControllerBase
+public class AuthController(AppDbContext db, JwtTokenGenerator jwt) : ControllerBase
 {
-    private readonly AppDbContext db;
-    private readonly JwtTokenGenerator jwt;
-
-    public AuthController(AppDbContext db, JwtTokenGenerator jwt)
-    {
-        this.db = db;
-        this.jwt = jwt;
-    }
 
     [HttpPost("login")]
     public IActionResult Login(LoginRequestDto dto)
@@ -33,18 +25,17 @@ public class AuthController : ControllerBase
         {
             return Unauthorized("Username yoki password noto‘g‘ri");
         }
-        // 🔹 ROLE'LARNI OLAMIZ
+
         var roles = user.UserRoles
             .Select(ur => ur.Role.Name)
             .ToList();
 
-        // 🔹 TO‘G‘RI METOD
         var token = jwt.Generate(user, roles);
 
         return Ok(new
         {
             token,
-            fullName = $"{user.FirstName} {user.LastName}"
+            FullName = $"{user.FirstName} {user.LastName}"
         });
     }
 }

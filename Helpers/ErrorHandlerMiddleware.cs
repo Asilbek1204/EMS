@@ -4,7 +4,7 @@ using System.Net;
 using System.Text.Json;
 
 namespace EMS.Api.Helpers;
-public class ExceptionHandlingMiddleware
+public class ExceptionHandlingMiddleware 
 {
     private readonly RequestDelegate next;
     private readonly ILogger<ExceptionHandlingMiddleware> logger;
